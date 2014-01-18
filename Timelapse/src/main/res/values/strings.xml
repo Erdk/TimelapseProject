@@ -4,5 +4,8 @@
     <string name="app_name">TimelapseProject</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="fragment_timelapse_options_duration">How long timelapse will be?</string>
+    <string name="fragment_timelapse_options_interval">Interval between shots</string>
+    <string name="fragment_timelapse_options_fps">Target fps</string>
 
 </resources>

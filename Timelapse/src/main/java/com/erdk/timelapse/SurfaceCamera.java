@@ -11,13 +11,13 @@ import java.io.IOException;
 /**
  * Created by erdk on 13.01.14.
  */
-public class CameraSurface extends SurfaceView implements SurfaceHolder.Callback {
+public class SurfaceCamera extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final String TAG = "CameraSurface";
+    private static final String TAG = "SurfaceCamera";
     private SurfaceHolder mSurfaceHolder;
     private Camera mCamera;
 
-    public CameraSurface (Context context, Camera camera) {
+    public SurfaceCamera(Context context, Camera camera) {
         super(context);
 
         mCamera = camera;

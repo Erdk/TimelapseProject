@@ -2,21 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
-    tools:context="com.erdk.timelapse.MainActivity$PlaceholderFragment">
-
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_horizontal_margin"
-        android:paddingLeft="@dimen/activity_vertical_margin"/>
+    tools:context="com.erdk.timelapse.ActivityMain$PlaceholderFragment">
 
     <FrameLayout
-        android:id="@+id/camera_preview"
+        android:id="@+id/activity_main_content"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="1" />
+        android:layout_height="fill_parent" />
 
     <Button
         android:id="@+id/button_capture"
@@ -25,5 +16,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:text="Capture" />
+        android:text="Next" />
 </RelativeLayout>
