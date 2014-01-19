@@ -108,11 +108,15 @@ public class FragmentPreview extends Fragment {
         Camera.Parameters lParameters = mCamera.getParameters();
         List<Camera.Size> lSizeList = lParameters.getSupportedPictureSizes();
 
+        if (lSizeList != null && lSizeList.size() > 0) {
+            lParameters.setPictureSize(lSizeList.get(0).width, lSizeList.get(0).height);
+        }
+
         for (Camera.Size cs : lSizeList) {
             Log.d(TAG, "Supported size: " + cs.width + " x " + cs.height);
-            if (cs.width == 1920) {
-                lParameters.setPictureSize(cs.width, cs.height);
-            }
+//            if (cs.width == 1920) {
+//                lParameters.setPictureSize(cs.width, cs.height);
+//            }
         }
         lParameters.setSceneMode(Camera.Parameters.SCENE_MODE_HDR);
         lParameters.setJpegQuality(100);
