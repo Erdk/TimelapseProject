@@ -7,6 +7,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by erdk on 18.01.14.
@@ -75,7 +77,10 @@ public class FragmentPreview extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            int lNumberOfFrames = mTimelapseOptions.getFPS() * mTimelapseOptions.getDuration();
+                            PowerManager lPowerManager = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+                            PowerManager.WakeLock lWakeLock = lPowerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "My Lock");
+                            lWakeLock.acquire();
+                            int lNumberOfFrames = mTimelapseOptions.getFPS() * mTimelapseOptions.getDuration() * 60;
                             for (int i = 0; i < lNumberOfFrames; i++) {
                                 mCamera.takePicture(null, null, mPicture);
                                 mCurrentAndTotalFramesTextView.post(new PostProgress(i, lNumberOfFrames));
@@ -86,6 +91,7 @@ public class FragmentPreview extends Fragment {
                                     e.printStackTrace();
                                 }
                             }
+                            lWakeLock.release();
                         }
                     }).start();
 
@@ -95,10 +101,23 @@ public class FragmentPreview extends Fragment {
         });
 
         mCurrentAndTotalFramesTextView = (TextView) lRootView.findViewById(R.id.fragment_preview_numer_textView);
-        mCurrentAndTotalFramesTextView.setText("0 / " + String.valueOf(mTimelapseOptions.getFPS() * mTimelapseOptions.getDuration()));
+        mCurrentAndTotalFramesTextView.setText("0 / " + String.valueOf(mTimelapseOptions.getFPS() * mTimelapseOptions.getDuration() * 60));
 
         // add camera preview
         mCamera = GetCameraInstance();
+        Camera.Parameters lParameters = mCamera.getParameters();
+        List<Camera.Size> lSizeList = lParameters.getSupportedPictureSizes();
+
+        for (Camera.Size cs : lSizeList) {
+            Log.d(TAG, "Supported size: " + cs.width + " x " + cs.height);
+            if (cs.width == 1920) {
+                lParameters.setPictureSize(cs.width, cs.height);
+            }
+        }
+        lParameters.setSceneMode(Camera.Parameters.SCENE_MODE_HDR);
+        lParameters.setJpegQuality(100);
+        lParameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        mCamera.setParameters(lParameters);
         SurfaceCamera lSurfaceCamera = new SurfaceCamera(getActivity(), mCamera);
 
         FrameLayout preview = (FrameLayout) lRootView.findViewById(R.id.fragment_preview_camera_surface);
@@ -117,10 +136,14 @@ public class FragmentPreview extends Fragment {
         }
     }
 
-    private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
+    static int mCurrent = 0;
 
+    class CustomePictureCallback implements Camera.PictureCallback {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+            mCurrent++;
+            Log.d(TAG, "onPictureTaken: " + mCurrent);
+
             Date time = Calendar.getInstance().getTime();
 
             File pictureFile = new File(mSavePath + "/" + time.toString() + ".jpg");
@@ -146,7 +169,9 @@ public class FragmentPreview extends Fragment {
             RescanMedia(getActivity(), mSavePath);
             camera.startPreview();
         }
-    };
+    }
+
+    private Camera.PictureCallback mPicture = new CustomePictureCallback();
 
     private static Camera GetCameraInstance() {
         Camera camera = null;

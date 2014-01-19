@@ -21,6 +21,7 @@ public class ActivityMain extends Activity {
         getFragmentManager()
                 .beginTransaction()
                 .add(R.id.activity_main_content, mFragmentTimelapseOptions)
+                .addToBackStack(null)
                 .commit();
 
         // Add a listener to the Capture button
@@ -43,6 +44,7 @@ public class ActivityMain extends Activity {
                         getFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.activity_main_content, lFragmentPreview)
+                                .addToBackStack(null)
                                 .commit();
 
                         v.setVisibility(View.GONE);
